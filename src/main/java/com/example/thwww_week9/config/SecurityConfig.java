@@ -54,7 +54,9 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(auth -> auth
                                     .requestMatchers("/", "/home", "/index").hasRole("ADMIN")
                                     .requestMatchers("/api/**").hasRole("USER")
-                                        .requestMatchers("/h2-console/**").permitAll()
+//                                    .requestMatchers("/h2-console/**").permitAll()
+                                    .requestMatchers("/api/v1/auth/**", "/v2/api-docs/**", "/v3/api-docs/**",
+                                            "/swagger-resources/**", "/swagger-ui/**", "/webjars/**").permitAll()
                                     .anyRequest().authenticated())
                     .csrf(csrf-> csrf.ignoringRequestMatchers("/h2-console/**"))
                     .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
