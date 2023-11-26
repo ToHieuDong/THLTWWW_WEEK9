@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,12 +36,12 @@ public class SecurityConfig {
     @Autowired
     public void configSecurityWeb (AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder, DataSource dataSource) throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource).withDefaultSchema()
-            .withUser(User.withUsername("Gnoodd")
-                .password(passwordEncoder.encode("Gnoodd"))
+            .withUser(User.withUsername("admin")
+                .password(passwordEncoder.encode("admin"))
                 .roles("ADMIN")
                 .build())
-        .withUser(User.withUsername("Dong")
-                .password(passwordEncoder.encode("Dong"))
+        .withUser(User.withUsername("user")
+                .password(passwordEncoder.encode("user"))
                 .roles("User")
                 .build());
 
@@ -51,13 +52,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/home", "/index").hasRole("ADMIN")
-                .requestMatchers("/api/**").hasRole("USER")
-                .requestMatchers("/h2-console/**").permitAll()
-                .anyRequest().authenticated()
+                                    .requestMatchers("/", "/home", "/index").hasRole("ADMIN")
+                                    .requestMatchers("/api/**").hasRole("USER")
+                                        .requestMatchers("/h2-console/**").permitAll()
+                                    .anyRequest().authenticated())
+                    .csrf(csrf-> csrf.ignoringRequestMatchers("/h2-console/**"))
+                    .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                    .httpBasic(Customizer.withDefaults());
 
-        );
-        httpSecurity.httpBasic(Customizer.withDefaults());
 
 
         return httpSecurity.build();
