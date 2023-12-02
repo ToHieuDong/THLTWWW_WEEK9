@@ -25,6 +25,7 @@ In Memory Authentication:
     }
 ```
 fix lỗi: ```spring.main.allow-circular-references=true```
+
 In JDBC Authentication:
 ```
     @Autowired
